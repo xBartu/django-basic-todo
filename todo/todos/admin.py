@@ -1,9 +1,5 @@
 from django.contrib import admin
-from todos.models import ToDos, List
-
-class ToDosAdmin(admin.ModelAdmin):
-    list_display = ('title', 'list', 'due_to')
-    ordering = ('due_to')
+from todos.models import ToDo, List
 
 admin.site.register(List)
-admin.site.register(Todos, ToDosAdmin)
+admin.site.register(ToDo)

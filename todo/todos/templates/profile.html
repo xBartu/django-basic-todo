@@ -1,0 +1,92 @@
+{% extends "site_base.html" %}
+{% block extra_header %}
+<script>
+$(document).ready(function(){
+    $(".datefield").datepicker()
+});
+function delete_task(task){
+    var msg = $.ajax({
+                url:"/profile/delete-task/"+task+"/",
+                success: function(){
+                    $("#task-"+task).fadeOut(500);
+                    setTimeout($("#task-"+task).remove(),1000);                    
+                    }
+                });    
+}
+function add_task(){
+    title=$("#newtask-title").val();
+    tags=$("#newtask-tags").val();
+    date=$("#newtask-date").val();
+    var new_task = $.ajax({
+                     url:"/profile/add-task/",
+                     data:"title="+title+"&date="+date+"&cat="+$('#cat option:selected').val(),
+                     success: function(task_id){
+                   });
+}
+function complete_task(_id){
+    $.ajax({
+        url:"/profile/complete-task/",
+        data:"task_id="+_id,
+        success: function(result){
+        }
+    });
+}
+</script>
+{% endblock extra_header %}
+{% block body %}
+<section><div class="section subpage">
+    <div class="wrapper">    
+        <div class="row">
+            <div class="span12">
+            <h1>{{user}}'s Tasks</h1>
+            </div>
+        </div>
+            <div class="span5">           
+                <div class="formBox">                
+                    <h2>Add Todo</h2>
+                    <center>
+                    <form onsubmit="add_task();return false;" id="new_task_form" class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="username">Title</label>
+                                <input type="text" placeholder="Task Name" id="newtask-title"/>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label" for="password">Due Date</label>
+                                <input type="text" class="datefield" placeholder="04/01/2018" id="newtask-date"/>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label" for="password">Tags</label>
+                                <select id="cat">
+                                    {% for cat in cats %}
+                                        <option value="{{cat.id}}">{{cat.name}}</option>
+                                    {% endfor %}
+                                </select>
+                        </div>
+                        <br>
+                        <div class="control-group">
+                            <label class="control-label"></label>
+                                <input type="submit" class="btn primary" value="save" id="newtask-submit"/>
+                        </div>                        
+                    </form>
+                    </center>
+                </div>
+                <div class="formBox">
+                    <h2>List Todos</h2>
+                    <center><b>Todos</b></center>
+                    <ul>
+                        {% for todo in todos %}
+                            {% if not todo.is_completed %}
+                                <li> {{todo.title}} - <b style="color:red">{{todo.belong_to.name}}</b> - 
+                                    <b style="color:brown">{{todo.due_to}}</b><button onclick='$.ajax({url:"/profile/complete-task/", data:"task_id="+ {{todo.id}}, success: function(result){ }});'>Done</button></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                                
+            </div>
+        </div>
+    </div>
+</div></section>
+{% endblock body %}
